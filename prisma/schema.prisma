@@ -1,0 +1,103 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Difficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(USER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  authoredQuizzes Quiz[]
+  attempts        QuizAttempt[]
+  reviews         QuizReview[]
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  quizzes     Quiz[]
+}
+
+model Quiz {
+  id          String     @id @default(cuid())
+  title       String
+  description String
+  difficulty  Difficulty @default(BEGINNER)
+  isPublished Boolean    @default(false)
+  categoryId  String?
+  category    Category?  @relation(fields: [categoryId], references: [id])
+  authorId    String?
+  author      User?      @relation(fields: [authorId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  questions   Question[]
+  attempts    QuizAttempt[]
+  reviews     QuizReview[]
+}
+
+model Question {
+  id         String          @id @default(cuid())
+  prompt     String
+  explanation String
+  source     String?
+  quizId     String
+  quiz       Quiz            @relation(fields: [quizId], references: [id])
+  options    QuestionOption[]
+  createdAt  DateTime        @default(now())
+}
+
+model QuestionOption {
+  id         String   @id @default(cuid())
+  text       String
+  isCorrect  Boolean  @default(false)
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id])
+  createdAt  DateTime @default(now())
+}
+
+model QuizAttempt {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+  quizId         String
+  quiz           Quiz     @relation(fields: [quizId], references: [id])
+  score          Int
+  totalQuestions Int
+  passed         Boolean
+  answers        Json
+  createdAt      DateTime @default(now())
+}
+
+model QuizReview {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  quizId    String
+  quiz      Quiz     @relation(fields: [quizId], references: [id])
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+}

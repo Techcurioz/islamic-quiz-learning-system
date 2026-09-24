@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --brand-50: #f0fdf4;
+  --brand-500: #16a34a;
+  --brand-700: #15803d;
+  --brand-900: #14532d;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: linear-gradient(180deg, #f8fafc 0%, #eefcf4 100%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+input,
+select,
+textarea,
+button {
+  font: inherit;
+}
+
+.container-shell {
+  @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+}
